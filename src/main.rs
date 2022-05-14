@@ -11,12 +11,13 @@ fn main() {
     println!();
 
     if let Err(failed_exams) = result {
-        println!("Unfortunately, your repository didn't go well on the exams.");
+        println!("Unfortunately, your repository didn't pass on all the exams.");
         println!("Here's what it could learn to perform better in the future:\n");
 
         failed_exams
             .iter()
-            .for_each(|failed| println!("{}", failed.error));
+            .enumerate()
+            .for_each(|(idx, failed)| println!("{}) {}", idx + 1, failed.error));
         std::process::exit(1);
     } else {
         println!("Passed on all exams!");
