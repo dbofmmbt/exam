@@ -1,4 +1,11 @@
+use std::path::Path;
+
 fn main() {
+    if !Path::new("Cargo.toml").exists() {
+        eprintln!("The exams can only be applied at the root of a Cargo project");
+        std::process::exit(1);
+    }
+
     println!("Exam time started!\n");
     let result = exam::apply();
     println!();
