@@ -7,21 +7,31 @@
 
 use std::error::Error;
 
-use exams::{cargo_test, clippy, rustfmt};
+use exams::*;
 
-pub fn apply() -> Result<(), Vec<Box<dyn Error>>> {
+pub trait Exam {
+    fn name(&self) -> &str;
+    fn apply(&mut self) -> Result<(), ExamFailure>;
+}
+
+pub struct ExamFailure {
+    pub error: Box<dyn Error + 'static>,
+    pub report: Option<String>,
+}
+
+pub fn apply() -> Result<(), Vec<ExamFailure>> {
     let mut failed_exams = vec![];
 
     macro_rules! apply_exam {
-        ($exam:tt) => {
-            println!("Applying {}...", stringify!($exam));
+        ($exam:ident) => {
+            println!("Applying {}...", $exam.name());
             collect_failures(&mut failed_exams, $exam);
         };
     }
 
-    apply_exam!(rustfmt);
-    apply_exam!(clippy);
-    apply_exam!(cargo_test);
+    apply_exam!(RustfmtExam);
+    apply_exam!(ClippyExam);
+    apply_exam!(TestsExam);
 
     if failed_exams.is_empty() {
         Ok(())
@@ -30,13 +40,9 @@ pub fn apply() -> Result<(), Vec<Box<dyn Error>>> {
     }
 }
 
-fn collect_failures<F, T, E>(failed_exams: &mut Vec<Box<dyn Error>>, apply_exam: F)
-where
-    F: FnOnce() -> Result<T, E>,
-    E: Error + 'static,
-{
-    if let Err(e) = apply_exam() {
-        failed_exams.push(Box::new(e));
+fn collect_failures(failed_exams: &mut Vec<ExamFailure>, mut exam: impl Exam) {
+    if let Err(e) = exam.apply() {
+        failed_exams.push(e);
     }
 }
 

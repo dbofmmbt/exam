@@ -14,7 +14,9 @@ fn main() {
         println!("Unfortunately, your repository didn't go well on the exams.");
         println!("Here's what it could learn to perform better in the future:\n");
 
-        failed_exams.iter().for_each(|failed| println!("{failed}"));
+        failed_exams
+            .iter()
+            .for_each(|failed| println!("{}", failed.error));
         std::process::exit(1);
     } else {
         println!("Passed on all exams!");

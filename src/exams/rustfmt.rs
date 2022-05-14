@@ -1,18 +1,31 @@
 use std::process::Command;
 
-pub fn rustfmt() -> Result<(), RustFmtError> {
-    let output = Command::new("cargo")
-        .arg("fmt")
-        .arg("--")
-        .arg("--check")
-        .output()?;
+use crate::Exam;
 
-    if output.status.success() {
-        Ok(())
-    } else {
-        // We don't really need to handle it, as it is a best-effort attempt.
-        let _ = Command::new("cargo").arg("fmt").spawn();
-        Err(RustFmtError::Unformatted)
+use super::{from_io_err, from_output};
+
+pub struct RustfmtExam;
+
+impl Exam for RustfmtExam {
+    fn name(&self) -> &str {
+        "rustfmt"
+    }
+
+    fn apply(&mut self) -> Result<(), crate::ExamFailure> {
+        let output = Command::new("cargo")
+            .arg("fmt")
+            .arg("--")
+            .arg("--check")
+            .output()
+            .map_err(from_io_err)?;
+
+        if output.status.success() {
+            Ok(())
+        } else {
+            // We don't really need to handle it, as it is a best-effort attempt.
+            let _ = Command::new("cargo").arg("fmt").spawn();
+            Err(from_output(RustFmtError::Unformatted, output))
+        }
     }
 }
 
