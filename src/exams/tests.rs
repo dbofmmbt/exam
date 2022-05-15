@@ -7,6 +7,10 @@ use super::from_output;
 pub struct TestsExam;
 
 impl Exam for TestsExam {
+    fn name(&self) -> &str {
+        "cargo tests"
+    }
+
     fn apply(&mut self) -> Result<(), crate::ExamFailure> {
         let output = Command::new("cargo")
             .arg("test")

@@ -7,6 +7,10 @@ use super::{from_io_err, from_output};
 pub struct RustfmtExam;
 
 impl Exam for RustfmtExam {
+    fn name(&self) -> &str {
+        "rustfmt"
+    }
+
     fn apply(&mut self) -> Result<(), crate::ExamFailure> {
         let output = Command::new("cargo")
             .arg("fmt")
