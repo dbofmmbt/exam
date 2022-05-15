@@ -7,7 +7,7 @@ fn main() {
     }
 
     println!("Exam time started!\n");
-    let result = exam::apply();
+    let result = exam::Examiner::default().apply();
     println!();
 
     if let Err(failed_exams) = result {
@@ -18,6 +18,7 @@ fn main() {
             .iter()
             .enumerate()
             .for_each(|(idx, failed)| println!("{}) {}", idx + 1, failed.error));
+
         std::process::exit(1);
     } else {
         println!("Passed on all exams!");
