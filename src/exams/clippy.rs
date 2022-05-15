@@ -7,10 +7,6 @@ use super::{from_io_err, from_output};
 pub struct ClippyExam;
 
 impl Exam for ClippyExam {
-    fn name(&self) -> &str {
-        "clippy"
-    }
-
     fn apply(&mut self) -> Result<(), crate::ExamFailure> {
         let output = Command::new("cargo")
             .arg("clippy")

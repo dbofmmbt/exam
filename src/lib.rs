@@ -10,8 +10,16 @@ use std::error::Error;
 use exams::*;
 
 pub trait Exam {
-    fn name(&self) -> &str;
     fn apply(&mut self) -> Result<(), ExamFailure>;
+}
+
+impl<F> Exam for F
+where
+    F: FnMut() -> Result<(), ExamFailure>,
+{
+    fn apply(&mut self) -> Result<(), ExamFailure> {
+        self()
+    }
 }
 
 pub struct ExamFailure {
@@ -24,7 +32,7 @@ pub fn apply() -> Result<(), Vec<ExamFailure>> {
 
     macro_rules! apply_exam {
         ($exam:ident) => {
-            println!("Applying {}...", $exam.name());
+            println!("Applying {}...", stringify!($exam));
             collect_failures(&mut failed_exams, $exam);
         };
     }
